@@ -14,6 +14,6 @@ public interface EventScanner<E extends GDEntity> {
      * @return List of extracted data
      */
 
-    List<E> scan(List<E> preData, List<E> newData);
+    List<E> scan(List<Long> preData, List<E> newData);
 
 }

@@ -3,7 +3,12 @@ package com.github.DenFade.gdlistener.event;
 import com.github.DenFade.gdlistener.event.scanner.EventScanner;
 import com.github.DenFade.gdlistener.event.worker.EventWorker;
 import com.github.DenFade.gdlistener.utils.FileUtils;
+import com.github.alex1304.jdash.client.AnonymousGDClient;
 import com.github.alex1304.jdash.entity.GDEntity;
+import com.github.alex1304.jdash.util.GDPaginator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -25,20 +30,32 @@ public abstract class AbstractEvent<E extends GDEntity> {
         File db = new File(dbPath);
         if(!db.exists()){
             try{
-                FileWriter fr = new FileWriter(dbPath);
-                fr.write("");
-            } catch (IOException e){
+                FileUtils.writeFile(dbPath, new JSONObject("{ \"alive\":[],\"log\":[]}").toString(4));
+            } catch (IOException | JSONException e){
                 e.printStackTrace();
             }
         }
         return this;
     }
 
+    public JSONObject dbLoad(){
+        try{
+            return new JSONObject(FileUtils.readFile(dbPath));
+        } catch (IOException | JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void dbUpdate(List<E> newData){
 
     }
 
-    public void run(){
+    public GDPaginator<E> run(AnonymousGDClient client){
+        return worker.work(client);
+    }
 
+    public List<E> filter(List<Long> preList, List<E> newList){
+        return scanner.scan(preList, newList);
     }
 }

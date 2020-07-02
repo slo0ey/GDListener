@@ -12,20 +12,35 @@
         android:layout_height="wrap_content"
         android:text="TestVersion!"
         android:textSize="50sp"
+        android:layout_marginTop="50sp"
         app:layout_constraintVertical_chainStyle="spread_inside"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/loop_start"
+        app:layout_constraintBottom_toTopOf="@id/loop_start"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
     <Button
         android:id="@+id/loop_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintTop_toTopOf="@id/title"
+        android:text="start"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/loop_kill"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+
+    <Button
+        android:id="@+id/loop_kill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="kill"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintTop_toTopOf="@id/loop_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
