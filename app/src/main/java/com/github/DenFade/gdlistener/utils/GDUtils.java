@@ -14,7 +14,7 @@ public class GDUtils {
     public static HashMap<String, String> parseToMap(String str, String regex){
         String[] splitted = str.split(regex);
         HashMap<String, String> map = new HashMap<>();
-        for (int i = 0; i < splitted.length/2; i++) {
+        for (int i = 0; i < splitted.length-2; i+=2) {
             map.put(splitted[i], splitted[i+1]);
         }
         return map;
