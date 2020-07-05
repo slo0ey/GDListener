@@ -3,13 +3,14 @@ package com.github.DenFade.gdlistener.event;
 import com.github.DenFade.gdlistener.event.scanner.ListUpdatedScanner;
 import com.github.DenFade.gdlistener.event.worker.AwardedLevelAddEventWorker;
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
-import com.github.DenFade.gdlistener.utils.FileUtils;
+import com.github.DenFade.gdlistener.gd.log.GDLog;
+import com.github.DenFade.gdlistener.gd.log.GDLogProvider;
+import com.github.DenFade.gdlistener.utils.FileStream;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
@@ -24,33 +25,35 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
     @Override
     @SuppressWarnings("unchecked")
     public void dbUpdate(List<GDLevel> newData) {
+        Gson gson = new Gson();
         try{
-            JSONObject db = dbLoad();
-            List<Long> aliveList = (List<Long>) db.getJSONArray("alive");
-            JSONArray log = db.getJSONArray("log");
-            for(GDLevel l : newData){
-                JSONObject obj = new JSONObject();
-                if(l == null || l.getStars() == 0){
-                    if(l != null) aliveList.remove(l.getId());
-                    obj.put("type", -1);
-                } else {
-                    aliveList.add(l.getId());
-                    obj.put("type", 1);
-                }
-                obj.put("id", l.getId());
-                obj.put("name", l.getName());
-                obj.put("cName", l.getCreatorName());
-                obj.put("like", l.getLikes());
-                obj.put("dl", l.getDownloads());
-                obj.put("copy", l.getOriginalId() == 0);
-                obj.put("epic", l.isEpic());
-                obj.put("coin", l.getCoins());
-                obj.put("cv", l.hasVerifiedCoin());
+            JsonElement db = dbLoad();
 
+            Type logType = new TypeToken<List<GDLog<GDLevel>>>(){}.getType();
+            Type aliveType = new TypeToken<List<Long>>(){}.getType();
+
+            List<Long> alive = gson.fromJson(db.getAsJsonObject().get("alive"), aliveType);
+            List<GDLog<GDLevel>> log = gson.fromJson(db.getAsJsonObject().get("log"), logType);
+
+            for(GDLevel l : newData){
+                int type;
+                if(l.getStars() == 0 || l.getName() == "-"){
+                    type = -1;
+                    alive.remove(l.getId());
+                }
+                else {
+                    type = 1;
+                    alive.add(l.getId());
+                }
+                log.add(new GDLog<GDLevel>(l.getId(), l, type));
             }
 
-            FileUtils.writeFile(dbPath, db.toString(4));
-        } catch (IOException | JSONException e){
+            GDLog<GDLevel>[] log1 = log.toArray(new GDLog[log.size()]);
+            Long[] alive1 = alive.toArray(new Long[alive.size()]);
+            String provider = gson.toJson(new GDLogProvider<GDLevel>(log1, alive1));
+
+            FileStream.write(dbPath, provider);
+        } catch (Exception e){
             e.printStackTrace();
         }
     }

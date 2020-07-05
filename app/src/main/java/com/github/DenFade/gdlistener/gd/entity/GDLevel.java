@@ -17,7 +17,7 @@ public final class GDLevel extends GDEntity {
     private int objectCount;
     private GDSong song;
 
-    public GDLevel(long id, String name, String creatorName, int likes, int downloads, int stars, int difficulty, boolean isDemon, boolean isAuto, long originalId, boolean isEpic, int coins, boolean hasVerifiedCoin, int objectCount, GDSong song) {
+    public GDLevel(Long id, String name, String creatorName, int likes, int downloads, int stars, int difficulty, boolean isDemon, boolean isAuto, long originalId, boolean isEpic, int coins, boolean hasVerifiedCoin, int objectCount, GDSong song) {
         super(id);
         this.name = name;
         this.creatorName = creatorName;

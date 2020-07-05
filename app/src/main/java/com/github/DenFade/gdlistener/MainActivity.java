@@ -7,20 +7,19 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.DenFade.gdlistener.utils.FileUtils;
+import com.github.DenFade.gdlistener.utils.FileStream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.commons.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
         kill = (Button) findViewById(R.id.loop_kill);
         setting = (Button) findViewById(R.id.setting);
 
-        FileUtils.ROOT_DIR = getFilesDir().getAbsolutePath() + "/";
+        FileStream.ROOT_DIR = getFilesDir().getAbsolutePath() + "/";
 
         if(!new File(getFilesDir()+"/loop.properties").exists()){
             String resOption = "delay=30000\n"+
                                 "awarded=1";
             try {
-                FileUtils.writeFile(getFilesDir()+"/loop.properties", resOption);
+                FileStream.write(getFilesDir()+"/loop.properties", resOption);
             } catch (IOException e){
                 e.printStackTrace();
             }
@@ -87,10 +86,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    String json = FileUtils.readFile(FileUtils.ROOT_DIR+"awardedList.json");
-
-                    JSONObject j = new JSONObject(json);
-                } catch (IOException | JSONException e) {
+                    String json = FileStream.read(FileStream.ROOT_DIR+"awardedList.json");
+                    Log.d("JSON TEST", json);
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

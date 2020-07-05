@@ -1,22 +1,30 @@
 package com.github.DenFade.gdlistener.gd;
 
+import android.util.Log;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.ConnectionSpec;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 abstract class GDRequest<E> {
     private OkHttpClient client;
     protected HashMap<String, String> param = new HashMap<>();
 
     private static final MediaType contentType = MediaType.get("application/x-www-form-urlencoded");
-    public static final String BaseURL = "https://www.boomlings.com/database/";
+    public static final String BaseURL = "http://www.boomlings.com/database/";
 
     public GDRequest(int timeout){
         this.client = new OkHttpClient.Builder()
@@ -51,7 +59,9 @@ abstract class GDRequest<E> {
             result = Objects.requireNonNull(client.newCall(request)
                     .execute()
                         .body()).string();
+            if(result == "-1") Log.d("GDServer", "emitted -1");
         } catch (IOException | NullPointerException e) {
+            Log.d("Device", e.getClass().getName());
             e.printStackTrace();
             result = "-1";
         }

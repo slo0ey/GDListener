@@ -12,11 +12,14 @@ import androidx.annotation.RequiresApi;
 
 import com.github.DenFade.gdlistener.event.AbstractEvent;
 import com.github.DenFade.gdlistener.event.AwardedLevelUpdatedEvent;
-import com.github.DenFade.gdlistener.utils.FileUtils;
-
-import org.json.JSONException;
+import com.github.DenFade.gdlistener.gd.entity.GDEntity;
+import com.github.DenFade.gdlistener.utils.FileStream;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,8 +29,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import okhttp3.OkHttpClient;
 
 public class EventLoopService extends Service {
 
@@ -53,7 +54,7 @@ public class EventLoopService extends Service {
         int period;
         try{
             Properties setting = new Properties();
-            setting.load(Files.newBufferedReader(Paths.get(FileUtils.ROOT_DIR + "loop.properties")));
+            setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
 
             period = Integer.parseInt(setting.getProperty("delay"));
 
@@ -99,6 +100,8 @@ public class EventLoopService extends Service {
             try{
                 Log.d("Event", "start event!");
                 Log.d("EventList", events.toString());
+                Gson gson = new Gson();
+
                 for(AbstractEvent event : events){
                     Log.d("Event", event.toString());
                     event.dbInit(); //when db not exists
@@ -107,23 +110,28 @@ public class EventLoopService extends Service {
                         Log.d("Failed to fetch", "Gets list as -1");
                         return;
                     }
-                    List<Integer> alive;
+                    List<Long> alive;
                     try {
-                        alive = (List) event.dbLoad().getJSONArray("alive");
-                    } catch (JSONException e){
+                        JsonElement db = event.dbLoad();
+                        Type aliveType = new TypeToken<List<Long>>(){}.getType();
+                        if(db == null){
+                            Log.d("DB", "oof! empty db");
+                            return;
+                        }
+                        alive = gson.fromJson(db.getAsJsonObject().get("alive"), aliveType);
+                    } catch (Exception e){
                         e.printStackTrace();
                         Log.d("Failed to get alive list", Objects.requireNonNull(e.getMessage()));
                         return;
                     }
                     List updated = event.filter(alive, items);
+                    event.dbUpdate(updated);
                 }
                 Log.d("Event", "end event!");
             } catch (Exception e){
                 e.printStackTrace();
             }
         }
-
-
     }
 
     /*public void prepare() throws IOException {

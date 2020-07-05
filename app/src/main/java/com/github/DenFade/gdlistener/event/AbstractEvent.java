@@ -5,12 +5,20 @@ import android.util.Log;
 import com.github.DenFade.gdlistener.event.scanner.EventScanner;
 import com.github.DenFade.gdlistener.event.worker.EventWorker;
 import com.github.DenFade.gdlistener.gd.entity.GDEntity;
-import com.github.DenFade.gdlistener.utils.FileUtils;
+import com.github.DenFade.gdlistener.gd.log.GDLogProvider;
+import com.github.DenFade.gdlistener.utils.FileStream;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -22,7 +30,7 @@ public abstract class AbstractEvent<E extends GDEntity> {
     public AbstractEvent(EventWorker<E> worker, EventScanner<E> scanner, String dbPath){
         this.worker = worker;
         this.scanner = scanner;
-        this.dbPath = FileUtils.ROOT_DIR + dbPath;
+        this.dbPath = FileStream.ROOT_DIR + dbPath;
     }
 
     public void dbInit(){
@@ -31,9 +39,9 @@ public abstract class AbstractEvent<E extends GDEntity> {
             Log.d("DB", "Path: " + dbPath + "\nExist: false");
             try{
                 Log.d("DB", "작성 전");
-                FileUtils.writeFile(dbPath, new JSONObject("{ \"alive\":[],\"log\":[]}").toString(4));
-                Log.d("DB", "작성후: path - " + dbPath + "\n"+FileUtils.readFile(dbPath));
-            } catch (IOException | JSONException e){
+                FileStream.write(dbPath, "{ \"alive\":[],\"log\":[]}");
+                Log.d("DB", "작성후: path - " + dbPath + "\n"+ FileStream.read(dbPath));
+            } catch (IOException e){
                 e.printStackTrace();
             }
         } else {
@@ -41,10 +49,10 @@ public abstract class AbstractEvent<E extends GDEntity> {
         }
     }
 
-    public JSONObject dbLoad(){
-        try{
-            return new JSONObject(FileUtils.readFile(dbPath));
-        } catch (IOException | JSONException e){
+    public JsonElement dbLoad(){
+        try {
+            return JsonParser.parseString(FileStream.read(dbPath));
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

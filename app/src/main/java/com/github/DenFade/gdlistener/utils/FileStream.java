@@ -1,20 +1,18 @@
 package com.github.DenFade.gdlistener.utils;
 
-import android.os.Environment;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class FileUtils {
+public class FileStream {
     public static String ROOT_DIR = "";
 
-    private FileUtils(){
+    private FileStream(){
 
     }
 
-    public static String readFile(String path) throws IOException{
+    public static String read(String path) throws IOException{
         FileReader fr = new FileReader(path);
         BufferedReader buf = new BufferedReader(fr);
         StringBuilder result = new StringBuilder(buf.readLine());
@@ -25,15 +23,15 @@ public class FileUtils {
         return result.toString();
     }
 
-    public static void writeFile(String path, String text) throws IOException{
+    public static void write(String path, String text) throws IOException{
         FileWriter fw = new FileWriter(path);
         fw.write(text);
         fw.flush();
     }
 
-    public static void appendFile(String path, String text) throws IOException{
-        String file = readFile(path);
+    public static void append(String path, String text) throws IOException{
+        String file = read(path);
         file += text;
-        writeFile(path, file);
+        write(path, file);
     }
 }

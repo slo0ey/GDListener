@@ -22,7 +22,7 @@ public class ListUpdatedScanner implements EventScanner<GDLevel> {
         List<GDLevel> added = newData.stream()
                 .filter(l -> !preData.contains(l.getId()))
                 .collect(Collectors.toList());
-        List<GDLevel> removed = preData.subList(0, 10).stream()
+        List<GDLevel> removed = (preData.size() < 10 ? preData : preData.subList(0, 10)).stream()
                 .filter(l -> newData.stream().noneMatch(l2 -> l2.getId() == l))
                 .map(l -> {
                         try {

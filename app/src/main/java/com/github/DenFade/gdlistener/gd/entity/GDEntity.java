@@ -11,9 +11,4 @@ public abstract class GDEntity {
     public long getId(){
         return id;
     }
-
-    @Override
-    public String toString() {
-        return "GDEntity[id=" + id + "]";
-    }
 }
