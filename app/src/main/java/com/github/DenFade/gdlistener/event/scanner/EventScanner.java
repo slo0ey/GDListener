@@ -1,6 +1,6 @@
 package com.github.DenFade.gdlistener.event.scanner;
 
-import com.github.alex1304.jdash.entity.GDEntity;
+import com.github.DenFade.gdlistener.gd.entity.GDEntity;
 
 import java.util.List;
 

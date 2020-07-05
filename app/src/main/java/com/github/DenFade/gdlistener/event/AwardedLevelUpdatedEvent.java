@@ -2,10 +2,8 @@ package com.github.DenFade.gdlistener.event;
 
 import com.github.DenFade.gdlistener.event.scanner.ListUpdatedScanner;
 import com.github.DenFade.gdlistener.event.worker.AwardedLevelAddEventWorker;
+import com.github.DenFade.gdlistener.gd.entity.GDLevel;
 import com.github.DenFade.gdlistener.utils.FileUtils;
-import com.github.alex1304.jdash.client.AnonymousGDClient;
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.util.GDPaginator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,27 +22,31 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void dbUpdate(List<GDLevel> newData) {
         try{
-            JSONObject db = new JSONObject(FileUtils.readFile(dbPath));
-            JSONArray aliveList = db.getJSONArray("alive");
+            JSONObject db = dbLoad();
+            List<Long> aliveList = (List<Long>) db.getJSONArray("alive");
             JSONArray log = db.getJSONArray("log");
             for(GDLevel l : newData){
-                JSONObject table = new JSONObject();
-                table.put("id", l.getId());
-                table.put("name", l.getName());
-                table.put("cName", l.getCreatorName());
-                table.put("like", l.getLikes());
-                table.put("dl", l.getDownloads());
-                table.put("copy", l.getOriginalLevelID() == 0);
-                table.put("epic", l.isEpic());
-                table.put("coin", l.getCoinCount());
-                table.put("cv", l.hasCoinsVerified());
-                if(l.getStars() == 0){
-                    table.put("type", -1);
+                JSONObject obj = new JSONObject();
+                if(l == null || l.getStars() == 0){
+                    if(l != null) aliveList.remove(l.getId());
+                    obj.put("type", -1);
                 } else {
-                    table.put("type", 1);
+                    aliveList.add(l.getId());
+                    obj.put("type", 1);
                 }
+                obj.put("id", l.getId());
+                obj.put("name", l.getName());
+                obj.put("cName", l.getCreatorName());
+                obj.put("like", l.getLikes());
+                obj.put("dl", l.getDownloads());
+                obj.put("copy", l.getOriginalId() == 0);
+                obj.put("epic", l.isEpic());
+                obj.put("coin", l.getCoins());
+                obj.put("cv", l.hasVerifiedCoin());
+
             }
 
             FileUtils.writeFile(dbPath, db.toString(4));

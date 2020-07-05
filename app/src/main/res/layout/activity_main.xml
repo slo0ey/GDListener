@@ -7,14 +7,25 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/apptitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TestVersion!"
         android:textSize="50sp"
-        android:layout_marginTop="50sp"
+        android:layout_marginTop="50dp"
         app:layout_constraintVertical_chainStyle="spread_inside"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/loop_start"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
+
+    <Button
+        android:id="@+id/setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="setting"
+        app:layout_constraintTop_toBottomOf="@id/apptitle"
         app:layout_constraintBottom_toTopOf="@id/loop_start"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -25,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="start"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/setting"
         app:layout_constraintBottom_toTopOf="@id/loop_kill"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -36,7 +47,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="kill"
-        app:layout_constraintVertical_bias="0.3"
         app:layout_constraintTop_toTopOf="@id/loop_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

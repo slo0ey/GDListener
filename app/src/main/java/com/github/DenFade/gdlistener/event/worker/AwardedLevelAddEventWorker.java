@@ -1,16 +1,23 @@
 package com.github.DenFade.gdlistener.event.worker;
 
-import com.github.alex1304.jdash.client.AnonymousGDClient;
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.util.GDPaginator;
-import com.github.alex1304.jdash.util.LevelSearchFilters;
+import com.github.DenFade.gdlistener.gd.GDLevelSearchRequest;
+import com.github.DenFade.gdlistener.gd.entity.GDLevel;
+import com.github.DenFade.gdlistener.utils.GDUtils;
+
+import java.util.List;
+
+import okhttp3.OkHttpClient;
 
 public class AwardedLevelAddEventWorker implements EventWorker<GDLevel> {
 
     @Override
-    public GDPaginator<GDLevel> work(AnonymousGDClient client) {
-        return client.browseAwardedLevels(LevelSearchFilters.create(), 0)
-                .doOnError(Throwable::printStackTrace)
-                .block();
+    public List<GDLevel> work() {
+        try {
+            return new GDLevelSearchRequest(15000, "", GDUtils.LevelFilter.AWARDED, GDUtils.LevelFilter.create(), 0)
+                    .fetch();
+        } catch(IllegalAccessException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

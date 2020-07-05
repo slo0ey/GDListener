@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class FileUtils {
-    public static final String ROOT_DIR = "\\/data\\/data\\/com.github.DenFade.gdlistener\\/";
+    public static String ROOT_DIR = "";
 
     private FileUtils(){
 

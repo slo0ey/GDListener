@@ -1,32 +1,38 @@
 package com.github.DenFade.gdlistener.event.scanner;
 
-import android.os.Build;
+import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
-import com.github.alex1304.jdash.client.GDClientBuilder;
-import com.github.alex1304.jdash.entity.GDLevel;
-import com.github.alex1304.jdash.util.LevelSearchFilters;
+import com.github.DenFade.gdlistener.gd.GDLevelSearchRequest;
+import com.github.DenFade.gdlistener.gd.entity.GDLevel;
+import com.github.DenFade.gdlistener.utils.GDUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import okhttp3.OkHttpClient;
+
 public class ListUpdatedScanner implements EventScanner<GDLevel> {
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public List<GDLevel> scan(List<Long> preData, List<GDLevel> newData) {
         List<GDLevel> updated = new ArrayList<>();
         List<GDLevel> added = newData.stream()
                 .filter(l -> !preData.contains(l.getId()))
                 .collect(Collectors.toList());
-        List<GDLevel> removed = preData.stream()
+        List<GDLevel> removed = preData.subList(0, 10).stream()
                 .filter(l -> newData.stream().noneMatch(l2 -> l2.getId() == l))
-                .map(l -> Optional.ofNullable(GDClientBuilder.create().buildAnonymous()
-                        .searchLevels(l + "", LevelSearchFilters.create(), 0).block()
-                        .asList()).orElse((List<GDLevel>) new ArrayList<GDLevel>()).get(0)
+                .map(l -> {
+                        try {
+                            return new GDLevelSearchRequest(15000, "" + l, GDUtils.LevelFilter.DEFAULT, GDUtils.LevelFilter.create(), 0)
+                                .fetch().get(0);
+                        } catch (IllegalAccessException e){
+                            Log.d("Level Removed!", Objects.requireNonNull(e.getMessage()));
+                            return GDLevel.empty(l);
+                        }
+                    }
                 )
                 .collect(Collectors.toList());
         updated.addAll(added);
