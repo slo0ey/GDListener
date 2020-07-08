@@ -24,7 +24,7 @@
         android:id="@+id/cmd"
         android:layout_width="250dp"
         android:layout_height="50dp"
-        android:autofillHints="@string/cmd_hint"
+        android:hint="@string/cmd_hint"
         android:background="@color/gray"
         android:inputType="text"
         app:layout_constraintBottom_toTopOf="@id/run"

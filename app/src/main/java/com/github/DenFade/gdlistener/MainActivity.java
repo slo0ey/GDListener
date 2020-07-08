@@ -30,6 +30,19 @@ public class MainActivity extends AppCompatActivity {
 
     Messenger mOutputMessenger;
 
+    ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            System.out.println("Connected");
+            mOutputMessenger = new Messenger(iBinder);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mOutputMessenger = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,46 +64,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        ServiceConnection connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                mOutputMessenger = new Messenger(iBinder);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                mOutputMessenger = null;
-            }
-        };
-
         run.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
                     String command = cmd.getText().toString();
-                    Intent intent;
                     if (!command.startsWith("/")) return;
+                    if(command.endsWith(" ")) command = command.substring(0, command.length()-1);
                     switch (command) {
                         case "/help":
-                            setAlertDialog("Command List", "working..");
+                            setAlertDialog("Command List", String.join("\n\n", getResources().getStringArray(R.array.cmd_help)));
                             break;
-                        case "/start":
+                        case "/start at BACKGROUND":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             startService(new Intent(MainActivity.this, EventLoopService.class));
                             break;
-                        case "/start at FOREGROUND":
+                        case "/start":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             startForegroundService(new Intent(MainActivity.this, EventLoopService.class));
+                            Intent intent = new Intent(getApplicationContext(), EventLoopService.class);
+                            bindService(intent, connection, BIND_AUTO_CREATE);
                             break;
                         case "/withToast true":
-                            sendToService(1, 1);
+                            Toast.makeText(getApplicationContext(), sendToService(1, 1, 0) ? "Service: withToast=true" : "Service: Failed to change", Toast.LENGTH_SHORT).show();
                             break;
                         case "/withToast false":
-                            sendToService(1, 0);
+                            Toast.makeText(getApplicationContext(), sendToService(1, 0, 0) ? "Service: withToast=false" : "Service: Failed to change", Toast.LENGTH_SHORT).show();
                             break;
                         case "/kill":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             stopService(new Intent(MainActivity.this, EventLoopService.class));
+                            unbindService(connection);
                             break;
                         case "/remove list1":
                             FileStream.remove(FileStream.ROOT_DIR + "awardedList.json");
@@ -126,15 +130,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean sendToService(int... args){
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    private boolean sendToService(int what, int arg1, int arg2){
         Message msg = new Message();
-        msg.what = args[0];
-        msg.arg1 = args[1];
-        msg.arg2 = args[2];
+        msg.what = what;
+        msg.arg1 = arg1;
+        msg.arg2 = arg2;
         try {
+            System.out.println(mOutputMessenger);
             mOutputMessenger.send(msg);
             return true;
         } catch (RemoteException e) {
+            return false;
+        } catch (NullPointerException e){
             e.printStackTrace();
             return false;
         }

@@ -1,11 +1,13 @@
 package com.github.DenFade.gdlistener;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.github.DenFade.gdlistener.event.AbstractEvent;
@@ -46,16 +49,17 @@ public class EventLoopService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannel();
-        startForeground(0, new NotificationCompat.Builder(this, getString(R.string.channelId))
+
+        startForeground(1, new NotificationCompat.Builder(this, getString(R.string.channelId))
                 .setSmallIcon(R.drawable.icon)
-                .setContentTitle("EventLoopService is now running..")
+                .setContentTitle("EventLoopService is now running...")
                 .setContentText("Started At: " + new Date().toString())
                 .setPriority(NotificationCompat.PRIORITY_HIGH).build()
         );
 
         Collection<AbstractEvent<?>> list = new ArrayList<>();
         int period;
+
         try{
             Properties setting = new Properties();
             setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
@@ -77,7 +81,6 @@ public class EventLoopService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         Log.d("Timer", "cancel 호출: "+loop.cancel());
     }
 
@@ -88,6 +91,8 @@ public class EventLoopService extends Service {
                 new Handler.Callback() {
                     @Override
                     public boolean handleMessage(@NonNull Message message) {
+                        System.out.println(message.what);
+                        System.out.println(message.arg1);
                         switch (message.what){
                             case 1:
                                 toggleToast = message.arg1 == 1;
@@ -115,6 +120,8 @@ public class EventLoopService extends Service {
         @SuppressWarnings({"unchecked", "rawtypes"})
         public void run() {
             Log.d("Event", "start event!");
+            Handler handler = new Handler(Looper.getMainLooper());
+
             try{
                 Gson gson = new Gson();
                 for(AbstractEvent event : events){
@@ -137,9 +144,11 @@ public class EventLoopService extends Service {
                     List updated = event.filter(alive, items);
                     event.dbUpdateAndNotify(updated, EventLoopService.this, createNotificationChannel());
                 }
-                if(toggleToast) Toast.makeText(EventLoopService.this, "Event: End successfully", Toast.LENGTH_SHORT).show();
+                if(toggleToast){
+                    handler.post(() -> Toast.makeText(EventLoopService.this, "Event: Loop successfully", Toast.LENGTH_SHORT).show());
+                }
             } catch (Exception e){
-                if(toggleToast) Toast.makeText(EventLoopService.this, "Event: An error occurred\n" + e.getClass().getName() + ": " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                handler.post(() -> Toast.makeText(EventLoopService.this, "Event: An error occurred\n" + e.getClass().getName() + ": " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
                 e.printStackTrace();
             }
             Log.d("Event", "end event!");

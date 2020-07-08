@@ -1,11 +1,23 @@
 <resources>
     <string name="app_name">GDListener</string>
     <string name="mainTitle">TestVersion!</string>
-    <string name="cmd_hint">Type "/help" to check all commands</string>
+    <string name="cmd_hint"> Type \'/help\'</string>
     <string name="cmd_run">run</string>
     <string name="channelName">EVENTLOOP</string>
     <string name="channelDesc">NOTIFICATION CHANNEL FOR EVENTLOOP</string>
     <string name="channelId">EL0</string>
     <string name="level_rate">🌟 Nᴇᴡ Lᴇᴠᴇʟ Ṙᴀᴛᴇᴅ! 🌟</string>
     <string name="level_unrate">❌ Lᴇᴠᴇʟ UṉṘᴀᴛᴇᴅ! ❌ 🌟</string>
+
+    <string-array name="cmd_help">
+        <item>[/start] : Service를 Foreground에서 실행시킵니다.</item>
+        <item>[/start at BACKGROUND] : Service를 Background에서 실행시킵니다. (For test)</item>
+        <item>[/kill] : 실행중인 Service를 멈춥니다.</item>
+        <item>[/withToast true] : 매 Delay마다 Event가 실행 될 시 토스트 메시지를 띄웁니다.</item>
+        <item>[/withToast false] : Toast메시지를 띄우지 않습니다.</item>
+        <item>[/view .loop] : loop.properties 파일을 열람합니다.</item>
+        <item>[/view list1] : awardedList.json 파일을 열람합니다.</item>
+        <item>[/remove .loop] : loop.properties 파일을 삭제합니다. (Not recommended)</item>
+        <item>[/remove list1] : awardedList.json 파일을 삭제합니다.</item>
+    </string-array>
 </resources>
