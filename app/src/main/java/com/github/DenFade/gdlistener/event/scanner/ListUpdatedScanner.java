@@ -4,15 +4,11 @@ import android.util.Log;
 
 import com.github.DenFade.gdlistener.gd.GDLevelSearchRequest;
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
-import com.github.DenFade.gdlistener.utils.GDUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import okhttp3.OkHttpClient;
 
 public class ListUpdatedScanner implements EventScanner<GDLevel> {
 
@@ -22,7 +18,7 @@ public class ListUpdatedScanner implements EventScanner<GDLevel> {
         List<GDLevel> added = newData.stream()
                 .filter(l -> !preData.contains(l.getId()))
                 .collect(Collectors.toList());
-        List<GDLevel> removed = (preData.size() < 10 ? preData : preData.subList(0, 10)).stream()
+        /*List<GDLevel> removed = (preData.size() < 10 ? preData : preData.subList(0, 10)).stream()
                 .filter(l -> newData.stream().noneMatch(l2 -> l2.getId() == l))
                 .map(l -> {
                         try {
@@ -34,9 +30,11 @@ public class ListUpdatedScanner implements EventScanner<GDLevel> {
                         }
                     }
                 )
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
         updated.addAll(added);
-        updated.addAll(removed);
+        System.out.println(newData);
+        System.out.println(updated);
+        //updated.addAll(removed);
         return updated;
     }
 }

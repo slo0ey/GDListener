@@ -1,9 +1,6 @@
 package com.github.DenFade.gdlistener.gd;
 
 import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
 import com.github.DenFade.gdlistener.gd.entity.GDSong;
@@ -12,13 +9,10 @@ import com.github.DenFade.gdlistener.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import okhttp3.OkHttpClient;
 
 public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
 
@@ -50,7 +44,6 @@ public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
         return BaseURL + "getGJLevels21.php";
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void putAdditionalParams() {
         param.put("str", Utils.encodeURI(query));
@@ -60,7 +53,9 @@ public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
         if(!param.containsKey("diff")) param.put("diff", "-");
         if(!param.containsKey("len")) param.put("len", "-");
         if(strategy == GDUtils.LevelFilter.FOLLOWED && !followed.isEmpty()){
-            param.put("followed", String.join(",", followed.stream().map(String::valueOf).collect(Collectors.toSet())));
+            String followedList = "";
+            followedList = String.join(",", followed.stream().map(String::valueOf).collect(Collectors.toSet()));
+            param.put("followed", followedList);
         }
     }
 
@@ -95,8 +90,10 @@ public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
                             creatorName,
                             Integer.parseInt(Utils.defaultOrGet(l.get("14"), "0")),
                             Integer.parseInt(Utils.defaultOrGet(l.get("10"), "0")),
+                            Integer.parseInt(Utils.defaultOrGet(l.get("19"), "0")),
                             Integer.parseInt(Utils.defaultOrGet(l.get("18"), "0")),
                             Integer.parseInt(Utils.defaultOrGet(l.get("9"), "0")),
+                            Integer.parseInt(Utils.defaultOrGet(l.get("43"), "0")),
                             Utils.defaultOrGet(l.get("17"), "0").equals("1"),
                             Utils.defaultOrGet(l.get("25"), "0").equals("1"),
                             Integer.parseInt(Utils.defaultOrGet(l.get("30"), "0")),

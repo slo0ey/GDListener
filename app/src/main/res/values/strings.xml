@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">GDListener</string>
+    <string name="mainTitle">TestVersion!</string>
+    <string name="cmd_hint">Type "/help" to check all commands</string>
+    <string name="cmd_run">run</string>
+    <string name="channelName">EVENTLOOP</string>
+    <string name="channelDesc">NOTIFICATION CHANNEL FOR EVENTLOOP</string>
+    <string name="channelId">EL0</string>
+    <string name="level_rate">🌟 Nᴇᴡ Lᴇᴠᴇʟ Ṙᴀᴛᴇᴅ! 🌟</string>
+    <string name="level_unrate">❌ Lᴇᴠᴇʟ UṉṘᴀᴛᴇᴅ! ❌ 🌟</string>
 </resources>

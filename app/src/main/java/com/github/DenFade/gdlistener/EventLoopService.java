@@ -1,18 +1,22 @@
 package com.github.DenFade.gdlistener;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.RemoteException;
+import android.os.Message;
+import android.os.Messenger;
 import android.util.Log;
+import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.github.DenFade.gdlistener.event.AbstractEvent;
 import com.github.DenFade.gdlistener.event.AwardedLevelUpdatedEvent;
-import com.github.DenFade.gdlistener.gd.entity.GDEntity;
 import com.github.DenFade.gdlistener.utils.FileStream;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -24,51 +28,47 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class EventLoopService extends Service {
 
-    final Timer timer = new Timer();
-    EventLoop loop;
+    private final Timer timer = new Timer();
+    private EventLoop loop;
+    private boolean toggleToast = false;
 
     public EventLoopService() {
     }
 
-    IEventLoopService.Stub binder = new IEventLoopService.Stub() {
-        @Override
-        public String getJson() throws RemoteException {
-            return "";
-        }
-    };
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate() {
         super.onCreate();
+        createNotificationChannel();
+        startForeground(0, new NotificationCompat.Builder(this, getString(R.string.channelId))
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle("EventLoopService is now running..")
+                .setContentText("Started At: " + new Date().toString())
+                .setPriority(NotificationCompat.PRIORITY_HIGH).build()
+        );
 
         Collection<AbstractEvent<?>> list = new ArrayList<>();
         int period;
         try{
             Properties setting = new Properties();
             setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
-
             period = Integer.parseInt(setting.getProperty("delay"));
-
-                Log.d("Awarded", String.valueOf(setting.getProperty("awarded") == "1"));
-
             list.add(new AwardedLevelUpdatedEvent());
             loop = new EventLoop(list);
         } catch (IOException e){
             period = 30_000;
             list.add(new AwardedLevelUpdatedEvent());
             loop = new EventLoop(list);
-
             e.printStackTrace();
         }
+
         Log.d("Timer", "schedule 호출전");
         timer.schedule(loop, 10000, period);
         Log.d("Timer", "schedule 호출");
@@ -77,13 +77,30 @@ public class EventLoopService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("Timer", "cancel 호출: "+String.valueOf(loop.cancel()));
+
+        Log.d("Timer", "cancel 호출: "+loop.cancel());
     }
 
+    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        return new Messenger(new Handler(
+                new Handler.Callback() {
+                    @Override
+                    public boolean handleMessage(@NonNull Message message) {
+                        switch (message.what){
+                            case 1:
+                                toggleToast = message.arg1 == 1;
+                                break;
+                            default:
+                                return false;
+                        }
+                        return true;
+                    }
+                }
+        )).getBinder();
     }
+
 
     private class EventLoop extends TimerTask {
 
@@ -97,50 +114,46 @@ public class EventLoopService extends Service {
         @Override
         @SuppressWarnings({"unchecked", "rawtypes"})
         public void run() {
+            Log.d("Event", "start event!");
             try{
-                Log.d("Event", "start event!");
-                Log.d("EventList", events.toString());
                 Gson gson = new Gson();
-
                 for(AbstractEvent event : events){
-                    Log.d("Event", event.toString());
                     event.dbInit(); //when db not exists
                     List items = event.run();
-                    if(items == null){
-                        Log.d("Failed to fetch", "Gets list as -1");
-                        return;
-                    }
+                    if(items == null) return;
                     List<Long> alive;
                     try {
                         JsonElement db = event.dbLoad();
-                        Type aliveType = new TypeToken<List<Long>>(){}.getType();
                         if(db == null){
                             Log.d("DB", "oof! empty db");
                             return;
                         }
+                        Type aliveType = new TypeToken<List<Long>>(){}.getType();
                         alive = gson.fromJson(db.getAsJsonObject().get("alive"), aliveType);
                     } catch (Exception e){
-                        e.printStackTrace();
-                        Log.d("Failed to get alive list", Objects.requireNonNull(e.getMessage()));
+                        Log.d("DB", "Failed to get alive list");
                         return;
                     }
                     List updated = event.filter(alive, items);
-                    event.dbUpdate(updated);
+                    event.dbUpdateAndNotify(updated, EventLoopService.this, createNotificationChannel());
                 }
-                Log.d("Event", "end event!");
+                if(toggleToast) Toast.makeText(EventLoopService.this, "Event: End successfully", Toast.LENGTH_SHORT).show();
             } catch (Exception e){
+                if(toggleToast) Toast.makeText(EventLoopService.this, "Event: An error occurred\n" + e.getClass().getName() + ": " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
+            Log.d("Event", "end event!");
         }
     }
 
-    /*public void prepare() throws IOException {
-        Properties loop = new Properties();
-        loop.load(getClass().getResourceAsStream(FileUtils.ROOT_DIR + "loop.properties"));
-
-        loopDelay = Integer.parseInt(loop.getProperty("delay"));
-        notification = Integer.parseInt(loop.getProperty("notification"));
-
-        if(loop.getProperty("awarded") == "1") events.add(new AwardedLevelUpdatedEvent());
-    }*/
+    private NotificationManager createNotificationChannel(){
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        CharSequence name = getString(R.string.channelName);
+        String description = getString(R.string.channelDesc);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(getString(R.string.channelId), name, importance);
+        channel.setDescription(description);
+        notificationManager.createNotificationChannel(channel);
+        return notificationManager;
+    }
 }

@@ -14,7 +14,7 @@ public class GDUtils {
     public static HashMap<String, String> parseToMap(String str, String regex){
         String[] splitted = str.split(regex);
         HashMap<String, String> map = new HashMap<>();
-        for (int i = 0; i < splitted.length-2; i+=2) {
+        for (int i = 0; i < splitted.length-1; i+=2) {
             map.put(splitted[i], splitted[i+1]);
         }
         return map;
@@ -37,7 +37,7 @@ public class GDUtils {
         Map<Long, GDSong> songList = new HashMap<>();
         for(String data : splitted){
             Map<String, String> songData = parseToMap(data, "~\\|~");
-            Long songId = Long.parseLong(Utils.defaultOrGet(songData.get("1"), "0"));
+            long songId = Long.parseLong(Utils.defaultOrGet(songData.get("1"), "0"));
             songList.put(songId,
                     new GDSong(songId,
                             Utils.defaultOrGet(songData.get("2"), "-"),

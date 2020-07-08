@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.github.DenFade.gdlistener"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 30
         multiDexEnabled true
         versionCode 1

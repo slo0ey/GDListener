@@ -1,6 +1,7 @@
 package com.github.DenFade.gdlistener.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -27,6 +28,11 @@ public class FileStream {
         FileWriter fw = new FileWriter(path);
         fw.write(text);
         fw.flush();
+    }
+
+    public static void remove(String path){
+        File f = new File(path);
+        if(f.exists()) f.delete();
     }
 
     public static void append(String path, String text) throws IOException{
