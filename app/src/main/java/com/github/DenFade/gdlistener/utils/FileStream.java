@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class FileStream {
     public static String ROOT_DIR = "";
@@ -28,6 +31,14 @@ public class FileStream {
         FileWriter fw = new FileWriter(path);
         fw.write(text);
         fw.flush();
+    }
+
+    public static void writeAsProperties(String path, Properties prop) throws IOException {
+        List<String> props = new ArrayList<>();
+        for(String key : prop.stringPropertyNames()){
+            props.add(key+"="+prop.getProperty(key));
+        }
+        write(path, String.join("\n", props.toArray(new String[]{})));
     }
 
     public static void remove(String path){

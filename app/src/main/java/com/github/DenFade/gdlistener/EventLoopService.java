@@ -1,6 +1,5 @@
 package com.github.DenFade.gdlistener;
 
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -8,14 +7,10 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.github.DenFade.gdlistener.event.AbstractEvent;
@@ -25,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -50,6 +44,7 @@ public class EventLoopService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        createNotificationChannel();
         startForeground(1, new NotificationCompat.Builder(this, getString(R.string.channelId))
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle("EventLoopService is now running...")
@@ -64,17 +59,19 @@ public class EventLoopService extends Service {
             Properties setting = new Properties();
             setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
             period = Integer.parseInt(setting.getProperty("delay"));
-            list.add(new AwardedLevelUpdatedEvent());
+            if(setting.getProperty("awarded").equals("1")) list.add(new AwardedLevelUpdatedEvent());
+            if(setting.getProperty("withToast").equals("1")) toggleToast = true;
             loop = new EventLoop(list);
-        } catch (IOException e){
+        } catch (Exception e){
             period = 30_000;
             list.add(new AwardedLevelUpdatedEvent());
+            toggleToast = false;
             loop = new EventLoop(list);
             e.printStackTrace();
         }
 
         Log.d("Timer", "schedule 호출전");
-        timer.schedule(loop, 10000, period);
+        timer.schedule(loop, 5000, period);
         Log.d("Timer", "schedule 호출");
     }
 
@@ -87,25 +84,8 @@ public class EventLoopService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return new Messenger(new Handler(
-                new Handler.Callback() {
-                    @Override
-                    public boolean handleMessage(@NonNull Message message) {
-                        System.out.println(message.what);
-                        System.out.println(message.arg1);
-                        switch (message.what){
-                            case 1:
-                                toggleToast = message.arg1 == 1;
-                                break;
-                            default:
-                                return false;
-                        }
-                        return true;
-                    }
-                }
-        )).getBinder();
+        return null;
     }
-
 
     private class EventLoop extends TimerTask {
 
@@ -148,7 +128,9 @@ public class EventLoopService extends Service {
                     handler.post(() -> Toast.makeText(EventLoopService.this, "Event: Loop successfully", Toast.LENGTH_SHORT).show());
                 }
             } catch (Exception e){
-                handler.post(() -> Toast.makeText(EventLoopService.this, "Event: An error occurred\n" + e.getClass().getName() + ": " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
+                if(toggleToast){
+                    handler.post(() -> Toast.makeText(EventLoopService.this, "Event: An error occurred\n" + e.getClass().getName() + ": " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
+                }
                 e.printStackTrace();
             }
             Log.d("Event", "end event!");

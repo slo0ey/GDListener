@@ -6,8 +6,6 @@ import com.github.DenFade.gdlistener.utils.GDUtils;
 
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-
 public class AwardedLevelAddEventWorker implements EventWorker<GDLevel> {
 
     @Override

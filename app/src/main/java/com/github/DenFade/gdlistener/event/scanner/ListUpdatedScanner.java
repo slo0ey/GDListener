@@ -1,13 +1,9 @@
 package com.github.DenFade.gdlistener.event.scanner;
 
-import android.util.Log;
-
-import com.github.DenFade.gdlistener.gd.GDLevelSearchRequest;
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ListUpdatedScanner implements EventScanner<GDLevel> {

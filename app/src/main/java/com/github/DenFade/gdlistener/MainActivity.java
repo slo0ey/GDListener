@@ -21,27 +21,15 @@ import com.github.DenFade.gdlistener.utils.FileStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView title;
     private EditText cmd;
     private Button run;
-
-    Messenger mOutputMessenger;
-
-    ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            System.out.println("Connected");
-            mOutputMessenger = new Messenger(iBinder);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mOutputMessenger = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(!new File(getFilesDir()+"/loop.properties").exists()){
             String resOption = "delay=30000\n"+
-                                "awarded=1";
+                                "awarded=1\n"+
+                                "withToast=0";
             try {
                 FileStream.write(getFilesDir()+"/loop.properties", resOption);
             } catch (IOException e){
@@ -82,19 +71,32 @@ public class MainActivity extends AppCompatActivity {
                         case "/start":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             startForegroundService(new Intent(MainActivity.this, EventLoopService.class));
-                            Intent intent = new Intent(getApplicationContext(), EventLoopService.class);
-                            bindService(intent, connection, BIND_AUTO_CREATE);
                             break;
                         case "/withToast true":
-                            Toast.makeText(getApplicationContext(), sendToService(1, 1, 0) ? "Service: withToast=true" : "Service: Failed to change", Toast.LENGTH_SHORT).show();
+                            try{
+                                Properties setting = new Properties();
+                                setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
+                                setting.setProperty("withToast", "1");
+                                FileStream.writeAsProperties(FileStream.ROOT_DIR + "loop.properties", setting);
+                                Toast.makeText(getApplicationContext(), "Event: withToast=true", Toast.LENGTH_SHORT).show();
+                            } catch (IOException e){
+                                Toast.makeText(getApplicationContext(), "Event: Failed to change", Toast.LENGTH_SHORT).show();
+                            }
                             break;
                         case "/withToast false":
-                            Toast.makeText(getApplicationContext(), sendToService(1, 0, 0) ? "Service: withToast=false" : "Service: Failed to change", Toast.LENGTH_SHORT).show();
+                            try{
+                                Properties setting = new Properties();
+                                setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
+                                setting.setProperty("withToast", "0");
+                                FileStream.writeAsProperties(FileStream.ROOT_DIR + "loop.properties", setting);
+                                Toast.makeText(getApplicationContext(), "Event: withToast=false", Toast.LENGTH_SHORT).show();
+                            } catch (IOException e){
+                                Toast.makeText(getApplicationContext(), "Event: Failed to change", Toast.LENGTH_SHORT).show();
+                            }
                             break;
                         case "/kill":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             stopService(new Intent(MainActivity.this, EventLoopService.class));
-                            unbindService(connection);
                             break;
                         case "/remove list1":
                             FileStream.remove(FileStream.ROOT_DIR + "awardedList.json");
@@ -128,33 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    private boolean sendToService(int what, int arg1, int arg2){
-        Message msg = new Message();
-        msg.what = what;
-        msg.arg1 = arg1;
-        msg.arg2 = arg2;
-        try {
-            System.out.println(mOutputMessenger);
-            mOutputMessenger.send(msg);
-            return true;
-        } catch (RemoteException e) {
-            return false;
-        } catch (NullPointerException e){
-            e.printStackTrace();
-            return false;
-        }
     }
 
     private void setAlertDialog(String title, String content){
