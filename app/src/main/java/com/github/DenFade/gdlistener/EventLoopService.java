@@ -1,7 +1,5 @@
 package com.github.DenFade.gdlistener;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +10,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
@@ -44,8 +41,8 @@ public class EventLoopService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        createNotificationChannel();
-        startForeground(1, new NotificationCompat.Builder(this, getString(R.string.channelId))
+
+        startForeground(1, new NotificationCompat.Builder(this, getString(R.string.service_channel_id))
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle("EventLoopService is now running...")
                 .setContentText("Started At: " + new Date().toString())
@@ -107,7 +104,7 @@ public class EventLoopService extends Service {
                         return;
                     }
                     List updated = event.filter(alive, items);
-                    event.dbUpdateAndNotify(updated, EventLoopService.this, createNotificationChannel());
+                    event.dbUpdateAndNotify(updated, EventLoopService.this);
                 }
                 if(toggleToast){
                     handler.post(() -> Toast.makeText(EventLoopService.this, "Event: Loop successfully", Toast.LENGTH_SHORT).show());
@@ -122,14 +119,5 @@ public class EventLoopService extends Service {
         }
     }
 
-    private NotificationManager createNotificationChannel(){
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        CharSequence name = getString(R.string.channelName);
-        String description = getString(R.string.channelDesc);
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(getString(R.string.channelId), name, importance);
-        channel.setDescription(description);
-        notificationManager.createNotificationChannel(channel);
-        return notificationManager;
-    }
+
 }

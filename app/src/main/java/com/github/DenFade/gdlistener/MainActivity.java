@@ -3,14 +3,11 @@ package com.github.DenFade.gdlistener;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ComponentName;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,10 +16,14 @@ import android.widget.Toast;
 
 import com.github.DenFade.gdlistener.utils.FileStream;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        createNotificationChannel();
         title = (TextView) findViewById(R.id.apptitle);
         cmd = (EditText) findViewById(R.id.cmd);
         run = (Button) findViewById(R.id.run);
@@ -141,5 +142,71 @@ public class MainActivity extends AppCompatActivity {
         alert.setTitle(title)
                 .setMessage(content)
                 .show();
+    }
+    private void createNotificationChannel(){
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        NotificationChannel channelForService = new NotificationChannel(
+                getString(R.string.service_channel_id),
+                getString(R.string.service_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        channelForService.setDescription(getString(R.string.service_channel_desc));
+        notificationManager.createNotificationChannel(channelForService);
+        List<NotificationChannelInfo> channelInfos = new ArrayList<>();
+        channelInfos.add(new NotificationChannelInfo(
+                getString(R.string.awarded_event_channel_id),
+                getString(R.string.awarded_event_channel_name)
+        ));
+        channelInfos.add(new NotificationChannelInfo(
+                getString(R.string.followed_event_channel_id),
+                getString(R.string.followed_event_channel_name)
+        ));
+        channelInfos.add(new NotificationChannelInfo(
+                getString(R.string.timely_event_channel_id),
+                getString(R.string.timely_event_channel_name)
+        ));
+        for(NotificationChannelInfo info : channelInfos) {
+            Log.d("NCI", info.toString());
+            NotificationChannel channel = new NotificationChannel(
+                    info.getId(),
+                    info.getName(),
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            String desc = info.getDescription();
+            if(desc!=null){
+                channel.setDescription(desc);
+            }
+            notificationManager.createNotificationChannel(channel);
+        }
+
+
+    }
+    private class NotificationChannelInfo {
+        private String id;
+        private String name;
+        private String description = null;
+        NotificationChannelInfo(String id, String name, String description){
+            this.id = id;
+            this.name = name;
+            this.description = description;
+        }
+        NotificationChannelInfo(String id, String name){
+            this.id = id;
+            this.name = name;
+        }
+        public String getId(){
+            return id;
+        }
+        public String getName(){
+            return name;
+        }
+        public String getDescription(){
+            return description;
+        }
+        @NotNull
+        @Override
+        public String toString(){
+            return "{id="+this.id+", name="+this.name+", description="+this.description+"}";
+        }
     }
 }

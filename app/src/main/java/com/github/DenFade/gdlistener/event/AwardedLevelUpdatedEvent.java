@@ -1,5 +1,6 @@
 package com.github.DenFade.gdlistener.event;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -28,11 +29,29 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
                 new ListUpdatedScanner(),
                 "awardedList.json"
         );
-    }
 
+    }
+    private Notification notificationGroup = null;
     @Override
     @SuppressWarnings("unchecked")
-    public void dbUpdateAndNotify(List<GDLevel> newData, Context context, NotificationManager manager) {
+    public void dbUpdateAndNotify(List<GDLevel> newData, Context context) {
+        String groupKey = context.getString(R.string.awarded_event_group);
+        if(notificationGroup==null){
+            notificationGroup = new NotificationCompat.Builder(context, context.getString(R.string.awarded_event_channel_id))
+                    .setContentTitle("")
+                    //set content text to support devices running API level < 24
+                    .setSmallIcon(R.drawable.icon)
+                    //build summary info into InboxStyle template
+                    .setStyle(new NotificationCompat.InboxStyle()
+                            .setSummaryText("New Events"))
+                    //specify which group this notification belongs to
+                    .setGroup(groupKey)
+                    //set this notification as the summary for the group
+                    .setGroupSummary(true)
+                    .build();
+        }
+
+        NotificationManager manager = context.getSystemService(NotificationManager.class);
         Gson gson = new Gson();
         try{
             JsonElement db = dbLoad();
@@ -53,15 +72,17 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
                     type = 1;
                     alive.add(l.getId());
                 }
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.channelId));
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.awarded_event_channel_id));
                 builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), Utils.rscSelector(l)))
                         .setSmallIcon(R.drawable.icon)
                         .setContentTitle(type == 1 ? context.getString(R.string.level_rate) : context.getString(R.string.level_unrate))
                         .setContentText(l.getName() + " by " + l.getCreatorName())
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setGroup(groupKey);
                 log.add(new GDLog<GDLevel>(l.getId(), l, type));
 
                 manager.notify((int) l.getId(), builder.build());
+                manager.notify(groupKey.hashCode(), notificationGroup);
             }
 
             GDLog<GDLevel>[] log1 = log.toArray(new GDLog[log.size()]);
