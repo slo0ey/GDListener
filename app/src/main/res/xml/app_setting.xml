@@ -13,10 +13,18 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="followedSwitch"
-            android:summary="Add this event to the loop"
+            android:summaryOff="Add this event to the loop"
+            android:summaryOn="@string/followedListDesc"
             android:title="@string/followedSwitch">
 
         </SwitchPreference>
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="followedList"
+            android:title="@string/followedList"
+            android:dependency="followedSwitch">
+
+        </EditTextPreference>
         <SwitchPreference
             android:defaultValue="false"
             android:key="timelySwitch"

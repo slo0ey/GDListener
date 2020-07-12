@@ -8,32 +8,29 @@ import android.graphics.BitmapFactory;
 import androidx.core.app.NotificationCompat;
 
 import com.github.DenFade.gdlistener.R;
-import com.github.DenFade.gdlistener.event.scanner.ListUpdatedScanner;
-import com.github.DenFade.gdlistener.event.worker.AwardedLevelAddEventWorker;
+import com.github.DenFade.gdlistener.event.scanner.DefaultLevelsUpdateScanner;
+import com.github.DenFade.gdlistener.event.worker.AwardedLevelsUpdateEventWorker;
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
-import com.github.DenFade.gdlistener.gd.log.GDLog;
-import com.github.DenFade.gdlistener.gd.log.GDLogProvider;
 import com.github.DenFade.gdlistener.utils.FileStream;
 import com.github.DenFade.gdlistener.utils.Utils;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
-    public AwardedLevelUpdatedEvent(){
+public class AwardedLevelslUpdateEvent extends AbstractEvent<GDLevel> {
+    public AwardedLevelslUpdateEvent(){
         super(
-                new AwardedLevelAddEventWorker(),
-                new ListUpdatedScanner(),
-                "awardedList.json"
+                new AwardedLevelsUpdateEventWorker(),
+                new DefaultLevelsUpdateScanner(),
+                "awardedList.txt"
         );
-
     }
+
     private Notification notificationGroup = null;
+
     @Override
-    @SuppressWarnings("unchecked")
     public void dbUpdateAndNotify(List<GDLevel> newData, Context context) {
         String groupKey = context.getString(R.string.awarded_event_group);
         if(notificationGroup==null){
@@ -43,7 +40,7 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
                     .setSmallIcon(R.drawable.icon)
                     //build summary info into InboxStyle template
                     .setStyle(new NotificationCompat.InboxStyle()
-                            .setSummaryText("New Events"))
+                            .setSummaryText("* Awarded *"))
                     //specify which group this notification belongs to
                     .setGroup(groupKey)
                     //set this notification as the summary for the group
@@ -54,13 +51,8 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
         NotificationManager manager = context.getSystemService(NotificationManager.class);
         Gson gson = new Gson();
         try{
-            JsonElement db = dbLoad();
-
-            Type logType = new TypeToken<List<GDLog<GDLevel>>>(){}.getType();
-            Type aliveType = new TypeToken<List<Long>>(){}.getType();
-
-            List<Long> alive = gson.fromJson(db.getAsJsonObject().get("alive"), aliveType);
-            List<GDLog<GDLevel>> log = gson.fromJson(db.getAsJsonObject().get("log"), logType);
+            ArrayList<Long> alive = new ArrayList<>(dbLoad());
+            System.out.println(dbPath);
 
             for(GDLevel l : newData){
                 int type;
@@ -79,17 +71,11 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
                         .setContentText(l.getName() + " by " + l.getCreatorName())
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setGroup(groupKey);
-                log.add(new GDLog<GDLevel>(l.getId(), l, type));
 
                 manager.notify((int) l.getId(), builder.build());
                 manager.notify(groupKey.hashCode(), notificationGroup);
             }
-
-            GDLog<GDLevel>[] log1 = log.toArray(new GDLog[log.size()]);
-            Long[] alive1 = alive.toArray(new Long[alive.size()]);
-            String provider = gson.toJson(new GDLogProvider<GDLevel>(log1, alive1));
-
-            FileStream.write(dbPath, provider);
+            FileStream.write(dbPath, alive.stream().map(String::valueOf).collect(Collectors.joining(",")));
         } catch (Exception e){
             e.printStackTrace();
         }

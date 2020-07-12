@@ -91,11 +91,12 @@ public class Utils {
         }
     }
 
-    public static void updateAppSetting(Properties setting){
-        try {
-            FileStream.writeAsProperties(FileStream.ROOT_DIR + "loop.properties", setting);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static boolean isVaildListForm(String rawList){
+        try{
+            for(String s : rawList.split(",")) Long.parseLong(s);
+            return true;
+        } catch (Exception e){
+            return false;
         }
     }
 }

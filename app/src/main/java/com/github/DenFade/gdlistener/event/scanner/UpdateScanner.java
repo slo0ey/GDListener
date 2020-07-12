@@ -4,7 +4,7 @@ import com.github.DenFade.gdlistener.gd.entity.GDEntity;
 
 import java.util.List;
 
-public interface EventScanner<E extends GDEntity> {
+public interface UpdateScanner<E extends GDEntity> {
 
     /**
      * Compare the old data list with the new data list and extract the required data list

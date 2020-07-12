@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ListUpdatedScanner implements EventScanner<GDLevel> {
+public class DefaultLevelsUpdateScanner implements UpdateScanner<GDLevel> {
 
     @Override
     public List<GDLevel> scan(List<Long> preData, List<GDLevel> newData) {

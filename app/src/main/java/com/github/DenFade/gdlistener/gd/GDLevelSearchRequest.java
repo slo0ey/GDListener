@@ -1,14 +1,11 @@
 package com.github.DenFade.gdlistener.gd;
 
-import android.os.Build;
-
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
 import com.github.DenFade.gdlistener.gd.entity.GDSong;
 import com.github.DenFade.gdlistener.utils.GDUtils;
 import com.github.DenFade.gdlistener.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +17,7 @@ public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
     private int strategy;
     private GDUtils.LevelFilter filter;
     private int page;
-    private Collection<? extends Long> followed;
+    private List<String> followed;
 
     public GDLevelSearchRequest(int timeout, String query, int strategy, GDUtils.LevelFilter filter, int page) {
         super(timeout);
@@ -30,7 +27,7 @@ public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
         this.page = page;
     }
 
-    public GDLevelSearchRequest(int timeout, String query, int strategy, GDUtils.LevelFilter filter, int page, Collection<? extends Long> followed) {
+    public GDLevelSearchRequest(int timeout, String query, int strategy, GDUtils.LevelFilter filter, int page, List<String> followed) {
         super(timeout);
         this.query = query;
         this.strategy = strategy;
@@ -52,9 +49,9 @@ public class GDLevelSearchRequest extends GDRequest<List<GDLevel>>{
         filter.getTable().forEach((k, v) -> param.put(k, ""+v));
         if(!param.containsKey("diff")) param.put("diff", "-");
         if(!param.containsKey("len")) param.put("len", "-");
-        if(strategy == GDUtils.LevelFilter.FOLLOWED && !followed.isEmpty()){
-            String followedList = "";
-            followedList = String.join(",", followed.stream().map(String::valueOf).collect(Collectors.toSet()));
+        if(strategy == GDUtils.LevelFilter.FOLLOWED){
+            String followedList;
+            followedList = String.join(",", followed);
             param.put("followed", followedList);
         }
     }

@@ -21,6 +21,7 @@
 
     <string name="level_rate">🌟 Nᴇᴡ Lᴇᴠᴇʟ Ṙᴀᴛᴇᴅ! 🌟</string>
     <string name="level_unrate">❌ Lᴇᴠᴇʟ UṉṘᴀᴛᴇᴅ! ❌ 🌟</string>
+    <string name="level_upload">✅ Nᴇᴡ Lᴇᴠᴇʟ Ṻᴘᴌᴏᴀᴅᴇᴆ! ✅</string>
 
 
     <string name="title_activity_app_setting">AppSettingActivity</string>
@@ -33,6 +34,10 @@
     <string name="loop_category">EventLoop setting</string>
     <string name="awardedSwitch"><b>AwardedListUpdateEvent</b></string>
     <string name="followedSwitch"><b>FollowedListUpdateEvent</b></string>
+    <string name="followedList">FollowedUser List</string>
+    <string name="followedListDesc">You must create the FollowedUser List.
+Get the account ID of the user you want.
+id1,id2,id3… Fill in the form below</string>
     <string name="timelySwitch"><b>TimelyLevelUpdateEvent</b></string>
     <string name="loopDelay"><b>Loop Period</b></string>
 

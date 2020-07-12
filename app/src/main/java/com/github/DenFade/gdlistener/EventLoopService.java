@@ -14,7 +14,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
 import com.github.DenFade.gdlistener.event.AbstractEvent;
-import com.github.DenFade.gdlistener.event.AwardedLevelUpdatedEvent;
+import com.github.DenFade.gdlistener.event.AwardedLevelslUpdateEvent;
+import com.github.DenFade.gdlistener.event.FollowedUserLevelsUpdateEvent;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
@@ -52,7 +53,9 @@ public class EventLoopService extends Service {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         int period = Integer.parseInt(Objects.requireNonNull(sp.getString("loopDelay", "30000")));
         toggleToast = sp.getBoolean("withToast", false);
-        if(sp.getBoolean("awarded", true)) list.add(new AwardedLevelUpdatedEvent());
+        if(sp.getBoolean("followedSwitch", false)) list.add(new FollowedUserLevelsUpdateEvent());
+        if(sp.getBoolean("awardedSwitch", true)) list.add(new AwardedLevelslUpdateEvent());
+
         loop = new EventLoop(list);
 
         timer.schedule(loop, 5000, period);
@@ -90,20 +93,9 @@ public class EventLoopService extends Service {
                 Gson gson = new Gson();
                 for(AbstractEvent event : events){
                     event.dbInit(); //when db not exists
-                    List items = event.run();
+                    List items = event.run(getApplicationContext());
                     if(items == null) return;
-                    List<Long> alive;
-                    try {
-                        JsonElement db = event.dbLoad();
-                        if(db == null){
-                            return;
-                        }
-                        Type aliveType = new TypeToken<List<Long>>(){}.getType();
-                        alive = gson.fromJson(db.getAsJsonObject().get("alive"), aliveType);
-                    } catch (Exception e){
-                        return;
-                    }
-                    List updated = event.filter(alive, items);
+                    List updated = event.filter(event.dbLoad(), items);
                     event.dbUpdateAndNotify(updated, EventLoopService.this);
                 }
                 if(toggleToast){

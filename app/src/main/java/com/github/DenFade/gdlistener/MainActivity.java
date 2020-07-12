@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,17 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         FileStream.ROOT_DIR = getFilesDir().getAbsolutePath() + "/";
 
-        if(!new File(getFilesDir()+"/loop.properties").exists()){
-            String resOption = "delay=30000\n"+
-                                "awarded=1\n"+
-                                "withToast=0";
-            try {
-                FileStream.write(getFilesDir()+"/loop.properties", resOption);
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-
         run.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,54 +67,33 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "MainActivity: Goto setting", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, AppSettingActivity.class);
                             startActivity(intent);
-                        case "/withToast true":
-                            try{
-                                Properties setting = new Properties();
-                                setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
-                                setting.setProperty("withToast", "1");
-                                FileStream.writeAsProperties(FileStream.ROOT_DIR + "loop.properties", setting);
-                                Toast.makeText(getApplicationContext(), "Event: withToast=true", Toast.LENGTH_SHORT).show();
-                            } catch (IOException e){
-                                Toast.makeText(getApplicationContext(), "Event: Failed to change", Toast.LENGTH_SHORT).show();
-                            }
-                            break;
-                        case "/withToast false":
-                            try{
-                                Properties setting = new Properties();
-                                setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
-                                setting.setProperty("withToast", "0");
-                                FileStream.writeAsProperties(FileStream.ROOT_DIR + "loop.properties", setting);
-                                Toast.makeText(getApplicationContext(), "Event: withToast=false", Toast.LENGTH_SHORT).show();
-                            } catch (IOException e){
-                                Toast.makeText(getApplicationContext(), "Event: Failed to change", Toast.LENGTH_SHORT).show();
-                            }
                             break;
                         case "/kill":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             stopService(new Intent(MainActivity.this, EventLoopService.class));
                             break;
-                        case "/remove list1":
-                            FileStream.remove(FileStream.ROOT_DIR + "awardedList.json");
-                            Toast.makeText(getApplicationContext(), "File: awardedList.json deleted!", Toast.LENGTH_SHORT).show();
+                        case "/remove awarded":
+                            FileStream.remove(FileStream.ROOT_DIR + "awardedList.txt");
+                            Toast.makeText(getApplicationContext(), "File: awardedList deleted!", Toast.LENGTH_SHORT).show();
                             break;
-                        case "/remove .loop":
-                            FileStream.remove(FileStream.ROOT_DIR + "loop.properties");
-                            Toast.makeText(getApplicationContext(), "File: loop.properties deleted!", Toast.LENGTH_SHORT).show();
+                        case "/remove followed":
+                            FileStream.remove(FileStream.ROOT_DIR + "followedList.txt");
+                            Toast.makeText(getApplicationContext(), "File: followedList deleted!", Toast.LENGTH_SHORT).show();
                             break;
-                        case "/view list1":
+                        case "/view awarded":
                             try {
-                                String res = FileStream.read(FileStream.ROOT_DIR + "awardedList.json");
-                                setAlertDialog("awardedList.json", res);
+                                String res = FileStream.read(FileStream.ROOT_DIR + "awardedList.txt");
+                                setAlertDialog("awardedList", res);
                             } catch (IOException e) {
-                                Toast.makeText(getApplicationContext(), "Oops: Failed to read awardedList.json", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Oops: Failed to read awardedList", Toast.LENGTH_SHORT).show();
                             }
                             break;
-                        case "/view .loop":
+                        case "/view followed":
                             try {
-                                String res = FileStream.read(FileStream.ROOT_DIR + "loop.properties");
-                                setAlertDialog("loop.properties", res);
+                                String res = FileStream.read(FileStream.ROOT_DIR + "followedList.txt");
+                                setAlertDialog("followedList", res);
                             } catch (IOException e) {
-                                Toast.makeText(getApplicationContext(), "Oops: Failed to read loop.properties", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Oops: Failed to read followedList", Toast.LENGTH_SHORT).show();
                             }
                             break;
                         default:
@@ -178,35 +147,41 @@ public class MainActivity extends AppCompatActivity {
             }
             notificationManager.createNotificationChannel(channel);
         }
-
-
     }
+
     private class NotificationChannelInfo {
+
         private String id;
         private String name;
         private String description = null;
+
         NotificationChannelInfo(String id, String name, String description){
             this.id = id;
             this.name = name;
             this.description = description;
         }
+
         NotificationChannelInfo(String id, String name){
             this.id = id;
             this.name = name;
         }
+
         public String getId(){
             return id;
         }
+
         public String getName(){
             return name;
         }
+
         public String getDescription(){
             return description;
         }
+
         @NotNull
         @Override
         public String toString(){
-            return "{id="+this.id+", name="+this.name+", description="+this.description+"}";
+            return "[id="+this.id+", name="+this.name+", description="+this.description+"]";
         }
     }
 }

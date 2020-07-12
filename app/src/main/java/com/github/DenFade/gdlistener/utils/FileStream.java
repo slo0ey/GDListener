@@ -2,6 +2,7 @@ package com.github.DenFade.gdlistener.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,6 +26,22 @@ public class FileStream {
             result.append("\\n").append(t);
         }
         return result.toString();
+    }
+
+    public static String read(String path, String replace) {
+        FileReader fr;
+        try {
+            fr = new FileReader(path);
+            BufferedReader buf = new BufferedReader(fr);
+            StringBuilder result = new StringBuilder(buf.readLine());
+            String t;
+            while((t=buf.readLine()) != null){
+                result.append("\\n").append(t);
+            }
+            return result.toString();
+        } catch (Exception e) {
+            return replace;
+        }
     }
 
     public static void write(String path, String text) throws IOException{
