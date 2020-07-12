@@ -72,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             startForegroundService(new Intent(MainActivity.this, EventLoopService.class));
                             break;
+                        case "/setting":
+                            Toast.makeText(getApplicationContext(), "MainActivity: Goto setting", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, AppSettingActivity.class);
+                            startActivity(intent);
                         case "/withToast true":
                             try{
                                 Properties setting = new Properties();

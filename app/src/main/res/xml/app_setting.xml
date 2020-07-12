@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout="@layout/gdevent_category">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="awardedSwitch"
+            android:summary="Add this event to the "
+            android:title="@string/awardedSwitch">
+        </SwitchPreference>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="followedSwitch"
+            android:summary="Add this event to the loop"
+            android:title="@string/followedSwitch">
+
+        </SwitchPreference>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="timelySwitch"
+            android:summary="Add this event to the loop"
+            android:title="@string/timelySwitch">
+
+        </SwitchPreference>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/loop_category">
+        <ListPreference
+            android:entries="@array/loop_delay"
+            android:entryValues="@array/loop_delay_values"
+            android:defaultValue="30000"
+            android:key="loopDelay"
+            android:summary="Select the loop period"
+            android:title="@string/loopDelay">
+
+        </ListPreference>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="withToast"
+            android:summary="Generate ToastMessage when event fired"
+            android:title="@string/withToast">
+
+        </SwitchPreference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -12,22 +13,19 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.preference.PreferenceManager;
 
 import com.github.DenFade.gdlistener.event.AbstractEvent;
 import com.github.DenFade.gdlistener.event.AwardedLevelUpdatedEvent;
-import com.github.DenFade.gdlistener.utils.FileStream;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,26 +49,13 @@ public class EventLoopService extends Service {
                 .setContentText("Started At: " + new Date().toString())
                 .setPriority(NotificationCompat.PRIORITY_HIGH).build()
         );
-
         Collection<AbstractEvent<?>> list = new ArrayList<>();
-        int period;
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int period = sp.getInt("loopDelay", 30000);
+        toggleToast = sp.getBoolean("withToast", false);
+        if(sp.getBoolean("awarded", true)) list.add(new AwardedLevelUpdatedEvent());
+        loop = new EventLoop(list);
 
-        try{
-            Properties setting = new Properties();
-            setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
-            period = Integer.parseInt(setting.getProperty("delay"));
-            if(setting.getProperty("awarded").equals("1")) list.add(new AwardedLevelUpdatedEvent());
-            if(setting.getProperty("withToast").equals("1")) toggleToast = true;
-            loop = new EventLoop(list);
-        } catch (Exception e){
-            period = 30_000;
-            list.add(new AwardedLevelUpdatedEvent());
-            toggleToast = false;
-            loop = new EventLoop(list);
-            e.printStackTrace();
-        }
-
-        Log.d("Timer", "schedule 호출전");
         timer.schedule(loop, 5000, period);
         Log.d("Timer", "schedule 호출");
     }
@@ -112,13 +97,11 @@ public class EventLoopService extends Service {
                     try {
                         JsonElement db = event.dbLoad();
                         if(db == null){
-                            Log.d("DB", "oof! empty db");
                             return;
                         }
                         Type aliveType = new TypeToken<List<Long>>(){}.getType();
                         alive = gson.fromJson(db.getAsJsonObject().get("alive"), aliveType);
                     } catch (Exception e){
-                        Log.d("DB", "Failed to get alive list");
                         return;
                     }
                     List updated = event.filter(alive, items);

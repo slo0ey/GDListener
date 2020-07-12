@@ -20,4 +20,32 @@
         <item>[/remove .loop] : loop.properties 파일을 삭제합니다. (Not recommended)</item>
         <item>[/remove list1] : awardedList.json 파일을 삭제합니다.</item>
     </string-array>
+    <string name="title_activity_app_setting">AppSettingActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="gdevent_category">GDEvent setting</string>
+    <string name="loop_category">EventLoop setting</string>
+    <string name="awardedSwitch"><b>AwardedListUpdateEvent</b></string>
+    <string name="followedSwitch"><b>FollowedListUpdateEvent</b></string>
+    <string name="timelySwitch"><b>TimelyLevelUpdateEvent</b></string>
+    <string name="loopDelay">Loop Period</string>
+    <string-array name="loop_delay">
+        <item>30s</item>
+        <item>45s</item>
+        <item>60s</item>
+        <item>90s</item>
+        <item>120s</item>
+    </string-array>
+    <integer-array name="loop_delay_values">
+        <item>30000</item>
+        <item>45000</item>
+        <item>60000</item>
+        <item>90000</item>
+        <item>120000</item>
+    </integer-array>
+    <string name="withToast">Generate Toast</string>
+    <string name="back_to_main">Back to Main</string>
 </resources>

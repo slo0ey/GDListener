@@ -3,10 +3,14 @@ package com.github.DenFade.gdlistener.utils;
 import com.github.DenFade.gdlistener.R;
 import com.github.DenFade.gdlistener.gd.entity.GDLevel;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.Properties;
 
 public class Utils {
 
@@ -73,6 +77,25 @@ public class Utils {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return uri;
+        }
+    }
+
+    public static Properties getAppSetting(){
+        try {
+            Properties setting = new Properties();
+            setting.load(Files.newBufferedReader(Paths.get(FileStream.ROOT_DIR + "loop.properties")));
+            return setting;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void updateAppSetting(Properties setting){
+        try {
+            FileStream.writeAsProperties(FileStream.ROOT_DIR + "loop.properties", setting);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
