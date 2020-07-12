@@ -3,23 +3,29 @@
     <string name="mainTitle">TestVersion!</string>
     <string name="cmd_hint"> Type \'/help\'</string>
     <string name="cmd_run">run</string>
-    <string name="channelName">EVENTLOOP</string>
-    <string name="channelDesc">NOTIFICATION CHANNEL FOR EVENTLOOP</string>
-    <string name="channelId">EL0</string>
+    <string name="service_channel_name">EVENTLOOP</string>
+    <string name="service_channel_desc">NOTIFICATION CHANNEL FOR EVENTLOOP</string>
+    <string name="service_channel_id">EL0</string>
+
+    <string name="awarded_event_channel_name">Awarded</string>
+    <string name="awarded_event_channel_desc">Notification for new events</string>
+    <string name="awarded_event_channel_id">awarded_event_channel</string>
+    <string name="awarded_event_group">com.github.DenFade.gdlistener.notification.awarded</string>
+
+    <string name="followed_event_channel_name">Followed</string>
+    <string name="followed_event_channel_desc">Notification for new events</string>
+    <string name="followed_event_channel_id">awarded_event_channel</string>
+    <string name="followed_event_group">com.github.DenFade.gdlistener.notification.followed</string>
+
+    <string name="timely_event_channel_name">Timely</string>
+    <string name="timely_event_channel_desc">Notification for new events</string>
+    <string name="timely_event_channel_id">awarded_event_channel</string>
+    <string name="timely_event_group">com.github.DenFade.gdlistener.notification.timely</string>
+
     <string name="level_rate">🌟 Nᴇᴡ Lᴇᴠᴇʟ Ṙᴀᴛᴇᴅ! 🌟</string>
     <string name="level_unrate">❌ Lᴇᴠᴇʟ UṉṘᴀᴛᴇᴅ! ❌ 🌟</string>
 
-    <string-array name="cmd_help">
-        <item>[/start] : Service를 Foreground에서 실행시킵니다.</item>
-        <item>[/start at BACKGROUND] : Service를 Background에서 실행시킵니다. (For test)</item>
-        <item>[/kill] : 실행중인 Service를 멈춥니다.</item>
-        <item>[/withToast true] : 매 Delay마다 Event가 실행 될 시 토스트 메시지를 띄웁니다.</item>
-        <item>[/withToast false] : Toast메시지를 띄우지 않습니다.</item>
-        <item>[/view .loop] : loop.properties 파일을 열람합니다.</item>
-        <item>[/view list1] : awardedList.json 파일을 열람합니다.</item>
-        <item>[/remove .loop] : loop.properties 파일을 삭제합니다. (Not recommended)</item>
-        <item>[/remove list1] : awardedList.json 파일을 삭제합니다.</item>
-    </string-array>
+
     <string name="title_activity_app_setting">AppSettingActivity</string>
     <!--
     This string is used for square devices and overridden by hello_world in
@@ -32,20 +38,8 @@
     <string name="followedSwitch"><b>FollowedListUpdateEvent</b></string>
     <string name="timelySwitch"><b>TimelyLevelUpdateEvent</b></string>
     <string name="loopDelay"><b>Loop Period</b></string>
-    <string-array name="loop_delay">
-        <item>30s</item>
-        <item>45s</item>
-        <item>60s</item>
-        <item>90s</item>
-        <item>120s</item>
-    </string-array>
-    <string-array name="loop_delay_values">
-        <item>30000</item>
-        <item>45000</item>
-        <item>60000</item>
-        <item>90000</item>
-        <item>120000</item>
-    </string-array>
+
     <string name="withToast"><b>Generate Toast</b></string>
     <string name="back_to_main">Back to Main</string>
+
 </resources>

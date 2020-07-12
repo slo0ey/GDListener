@@ -45,9 +45,7 @@ public abstract class AbstractEvent<E extends GDEntity> {
         }
     }
 
-    public void dbUpdateAndNotify(List<E> newData, Context context, NotificationManager manager){
-
-    }
+    public abstract void dbUpdateAndNotify(List<E> newData, Context context);
 
     public List<E> run(){
         return worker.work();

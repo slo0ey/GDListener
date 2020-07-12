@@ -3,14 +3,10 @@ package com.github.DenFade.gdlistener;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ComponentName;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        createNotificationChannel();
         title = (TextView) findViewById(R.id.apptitle);
         cmd = (EditText) findViewById(R.id.cmd);
         run = (Button) findViewById(R.id.run);
@@ -141,5 +137,24 @@ public class MainActivity extends AppCompatActivity {
         alert.setTitle(title)
                 .setMessage(content)
                 .show();
+    }
+    private void createNotificationChannel(){
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        NotificationChannel channelForService = new NotificationChannel(
+                getString(R.string.service_channel_id),
+                getString(R.string.service_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        channelForService.setDescription(getString(R.string.service_channel_desc));
+        notificationManager.createNotificationChannel(channelForService);
+
+        NotificationChannel channelForEvents = new NotificationChannel(
+                getString(R.string.awarded_event_channel_id),
+                getString(R.string.awarded_event_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+        notificationManager.createNotificationChannel(channelForEvents);
+
+
     }
 }
