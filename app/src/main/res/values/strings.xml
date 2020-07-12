@@ -8,18 +8,15 @@
     <string name="service_channel_id">EL0</string>
 
     <string name="awarded_event_channel_name">Awarded</string>
-    <string name="awarded_event_channel_desc">Notification for new events</string>
     <string name="awarded_event_channel_id">awarded_event_channel</string>
     <string name="awarded_event_group">com.github.DenFade.gdlistener.notification.awarded</string>
 
     <string name="followed_event_channel_name">Followed</string>
-    <string name="followed_event_channel_desc">Notification for new events</string>
-    <string name="followed_event_channel_id">awarded_event_channel</string>
+    <string name="followed_event_channel_id">followed_event_channel</string>
     <string name="followed_event_group">com.github.DenFade.gdlistener.notification.followed</string>
 
     <string name="timely_event_channel_name">Timely</string>
-    <string name="timely_event_channel_desc">Notification for new events</string>
-    <string name="timely_event_channel_id">awarded_event_channel</string>
+    <string name="timely_event_channel_id">timely_event_channel</string>
     <string name="timely_event_group">com.github.DenFade.gdlistener.notification.timely</string>
 
     <string name="level_rate">🌟 Nᴇᴡ Lᴇᴠᴇʟ Ṙᴀᴛᴇᴅ! 🌟</string>
