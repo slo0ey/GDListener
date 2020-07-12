@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,8 +52,8 @@ public class EventLoopService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH).build()
         );
         Collection<AbstractEvent<?>> list = new ArrayList<>();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        int period = sp.getInt("loopDelay", 30000);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int period = Integer.parseInt(Objects.requireNonNull(sp.getString("loopDelay", "30000")));
         toggleToast = sp.getBoolean("withToast", false);
         if(sp.getBoolean("awarded", true)) list.add(new AwardedLevelUpdatedEvent());
         loop = new EventLoop(list);
