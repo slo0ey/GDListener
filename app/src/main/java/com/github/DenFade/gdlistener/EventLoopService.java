@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -51,7 +53,7 @@ public class EventLoopService extends Service {
         );
         Collection<AbstractEvent<?>> list = new ArrayList<>();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int period = sp.getInt("loopDelay", 30000);
+        int period = Integer.parseInt(Objects.requireNonNull(sp.getString("loopDelay", "30000")));
         toggleToast = sp.getBoolean("withToast", false);
         if(sp.getBoolean("awarded", true)) list.add(new AwardedLevelUpdatedEvent());
         loop = new EventLoop(list);
