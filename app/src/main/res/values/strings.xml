@@ -31,7 +31,7 @@
     <string name="awardedSwitch"><b>AwardedListUpdateEvent</b></string>
     <string name="followedSwitch"><b>FollowedListUpdateEvent</b></string>
     <string name="timelySwitch"><b>TimelyLevelUpdateEvent</b></string>
-    <string name="loopDelay">Loop Period</string>
+    <string name="loopDelay"><b>Loop Period</b></string>
     <string-array name="loop_delay">
         <item>30s</item>
         <item>45s</item>
@@ -39,13 +39,13 @@
         <item>90s</item>
         <item>120s</item>
     </string-array>
-    <integer-array name="loop_delay_values">
+    <string-array name="loop_delay_values">
         <item>30000</item>
         <item>45000</item>
         <item>60000</item>
         <item>90000</item>
         <item>120000</item>
-    </integer-array>
-    <string name="withToast">Generate Toast</string>
+    </string-array>
+    <string name="withToast"><b>Generate Toast</b></string>
     <string name="back_to_main">Back to Main</string>
 </resources>

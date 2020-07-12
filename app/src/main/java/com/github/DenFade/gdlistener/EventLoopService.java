@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
@@ -50,7 +51,7 @@ public class EventLoopService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH).build()
         );
         Collection<AbstractEvent<?>> list = new ArrayList<>();
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         int period = sp.getInt("loopDelay", 30000);
         toggleToast = sp.getBoolean("withToast", false);
         if(sp.getBoolean("awarded", true)) list.add(new AwardedLevelUpdatedEvent());
