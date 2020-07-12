@@ -45,7 +45,7 @@ public class AwardedLevelUpdatedEvent extends AbstractEvent<GDLevel> {
 
             for(GDLevel l : newData){
                 int type;
-                if(l.getStars() == 0 || l.getName() == "-"){
+                if(l.getStars() == 0 || l.getName().equals("-")){
                     type = -1;
                     alive.remove(l.getId());
                 }
