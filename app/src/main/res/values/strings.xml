@@ -36,8 +36,8 @@
     <string name="followedSwitch"><b>FollowedListUpdateEvent</b></string>
     <string name="followedList">FollowedUser List</string>
     <string name="followedListDesc">You must create the FollowedUser List.
-Get the account ID of the user you want.
-id1,id2,id3… Fill in the form below</string>
+        Get the account ID of the user you want.
+        id1,id2,id3… Fill in the form below</string>
     <string name="timelySwitch"><b>TimelyLevelUpdateEvent</b></string>
     <string name="loopDelay"><b>Loop Period</b></string>
 

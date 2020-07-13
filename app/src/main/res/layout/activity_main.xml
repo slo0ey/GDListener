@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/mainTitle"
         android:textSize="50sp"
+        android:fontFamily="@font/stanberry"
         android:layout_marginTop="50dp"
         app:layout_constraintVertical_chainStyle="spread_inside"
         app:layout_constraintTop_toTopOf="parent"

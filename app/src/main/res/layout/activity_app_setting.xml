@@ -9,24 +9,9 @@
     <fragment
         android:id="@+id/frag_app_setting"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="match_parent"
         android:name="com.github.DenFade.gdlistener.AppSettingFragment">
 
     </fragment>
-
-    <Button
-        android:id="@+id/back_to_main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/frag_app_setting"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text="@string/back_to_main"
-        android:fontFamily="@font/stanberry"
-        android:textSize="15dp">
-
-    </Button>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

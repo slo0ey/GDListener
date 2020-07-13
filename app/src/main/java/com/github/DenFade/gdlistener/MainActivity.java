@@ -55,10 +55,6 @@ public class MainActivity extends AppCompatActivity {
                         case "/help":
                             setAlertDialog("Command List", String.join("\n\n", getResources().getStringArray(R.array.cmd_help)));
                             break;
-                        case "/start at BACKGROUND":
-                            Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
-                            startService(new Intent(MainActivity.this, EventLoopService.class));
-                            break;
                         case "/start":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
                             startForegroundService(new Intent(MainActivity.this, EventLoopService.class));
