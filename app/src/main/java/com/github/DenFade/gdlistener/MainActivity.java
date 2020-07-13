@@ -1,12 +1,14 @@
 package com.github.DenFade.gdlistener;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,18 +19,13 @@ import android.widget.Toast;
 
 import com.github.DenFade.gdlistener.utils.FileStream;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ConstraintLayout background;
     private TextView title;
     private EditText cmd;
     private Button run;
@@ -38,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createNotificationChannel();
+
+        background = (ConstraintLayout) findViewById(R.id.main_background);
         title = (TextView) findViewById(R.id.apptitle);
         cmd = (EditText) findViewById(R.id.cmd);
         run = (Button) findViewById(R.id.run);
@@ -54,6 +53,25 @@ public class MainActivity extends AppCompatActivity {
                     switch (command) {
                         case "/help":
                             setAlertDialog("Command List", String.join("\n\n", getResources().getStringArray(R.array.cmd_help)));
+                            break;
+                        case "/title":
+                            String r = String.format("%02X", (int) (Math.random() * 255));
+                            String g = String.format("%02X", (int) (Math.random() * 255));
+                            String b = String.format("%02X", (int) (Math.random() * 255));
+                            title.setTextColor(Color.parseColor("#" + r + g + b));
+                            Toast.makeText(getApplicationContext(), "Splash! #" + r + g + b, Toast.LENGTH_SHORT).show();
+                            break;
+                        case "/bg":
+                            String r2 = String.format("%02X", (int) (Math.random() * 255));
+                            String g2 = String.format("%02X", (int) (Math.random() * 255));
+                            String b2 = String.format("%02X", (int) (Math.random() * 255));
+                            background.setBackgroundColor(Color.parseColor("#" + r2 + g2 + b2));
+                            Toast.makeText(getApplicationContext(), "Splash! #" + r2 + g2 + b2, Toast.LENGTH_SHORT).show();
+                            break;
+                        case "/remove old":
+                            FileStream.remove(FileStream.ROOT_DIR + "awardedList.json");
+                            FileStream.remove(FileStream.ROOT_DIR + "loop.properties");
+                            Toast.makeText(getApplicationContext(), "File: old data deleted!", Toast.LENGTH_SHORT).show();
                             break;
                         case "/start":
                             Toast.makeText(getApplicationContext(), "MainActivity: Wait a second..", Toast.LENGTH_SHORT).show();
@@ -174,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
             return description;
         }
 
-        @NotNull
+        @NonNull
         @Override
         public String toString(){
             return "[id="+this.id+", name="+this.name+", description="+this.description+"]";
